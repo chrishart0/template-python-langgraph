@@ -1,0 +1,26 @@
+# Python Stuff
+.venv
+__pycache__
+
+# Coverage
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+
+# MacOS file
+.DS_Store
+
+# Environment variables
+.env
+
+# Test Data
+.data/
+data/
+outputs/
+
+# logs
+*.log
+log/*
+
+.cache/
