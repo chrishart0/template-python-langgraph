@@ -1,6 +1,5 @@
 # Template Python FastAPI Llama-Index and LangChain Repo
-[![CI](https://github.com/chrishart0/template-python-langgraph-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/chrishart0/template-python-langgraph-starter/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/github/chrishart0/template-python-langgraph-starter/graph/badge.svg?token=6QFK2BOQ54)](https://codecov.io/github/chrishart0/template-python-langgraph-starter)
+[![CI](https://github.com/chrishart0/template-python-langgraph/actions/workflows/ci.yml/badge.svg)](https://github.com/chrishart0/template-python-langgraph/actions/workflows/ci.yml)
 
 ## Instructions
 
