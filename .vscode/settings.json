@@ -3,7 +3,8 @@
         "BAAI",
         "checkpointer",
         "Jina",
-        "langgraph"
+        "langgraph",
+        "virality"
     ],
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python",
     "python.venvPath": "${workspaceFolder}/.venv"
