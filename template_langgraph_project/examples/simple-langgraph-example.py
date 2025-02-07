@@ -6,14 +6,15 @@
 from typing import Annotated
 from template_langgraph_project.helpers.llm import get_llm
 from typing_extensions import TypedDict
-from pathlib import Path
 
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph
 from langgraph.graph.message import add_messages
+from langgraph.checkpoint.memory import MemorySaver
 
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.text import Text
+from template_langgraph_project.helpers.graph_visualizer import save_graph_visualization
 
 
 class State(TypedDict):
@@ -23,15 +24,19 @@ class State(TypedDict):
     messages: Annotated[list, add_messages]
 
 
+# Prepare persistent memory
+memory = MemorySaver()
+
+# Pass the initial state to the StateGraph constructor.
 graph_builder = StateGraph(State)
 
 llm = get_llm(mode="fast")
-model = "gpt-4o"
 
 
 def chatbot(state: State):
-    print("\nstate[messages]")
-    print(state["messages"])
+    # Optionally, you can print or log the full conversation so far:
+    print("\nCurrent State Messages:")
+    print(state)
     print("-----------------\n")
     return {"messages": [llm.invoke(state["messages"])]}
 
@@ -41,85 +46,55 @@ def chatbot(state: State):
 # the node is used.
 graph_builder.add_node("chatbot", chatbot)
 
-graph_builder.add_edge(START, "chatbot")
-graph_builder.add_edge("chatbot", END)
+graph_builder.set_entry_point("chatbot")
+graph_builder.set_finish_point("chatbot")
 
-graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=memory)
 
 console = Console()
 
 
 ### Chat Interface with Markdown and Colors ###
-def stream_graph_updates_with_styles(user_input: str):
+def stream_graph_updates_with_styles(user_input: str, config: dict):
     if not user_input.strip():
         console.print(Text("Empty input. Please type something.", style="bold yellow"))
         return
 
     # Stream and display graph updates directly after user input
-    for event in graph.stream({"messages": [{"role": "user", "content": user_input}]}):
-        for value in event.values():
-            assistant_message = value["messages"][-1].content
-
-            # Display assistant's message with markdown and style
-            console.print(Text("Assistant:", style="bold green"))
-            markdown_response = Markdown(assistant_message)
-            console.print(markdown_response)
-            # Line break and divider
-            console.print(Text("\n", style="bold white"))
-
-
-def visualize_graph():
-    try:
-        # Get the Mermaid diagram source
-        mermaid_source = graph.get_graph().draw_mermaid()
-
-        # Create markdown content with mermaid diagram
-        markdown_content = f"""# LangGraph Visualization
-
-```mermaid
-{mermaid_source}
-```
-"""
-
-        # Save to a markdown file
-        output_dir = Path("output")
-        output_dir.mkdir(exist_ok=True)
-
-        with open(output_dir / "graph.md", "w") as f:
-            f.write(markdown_content)
-
-        console.print(
-            Text("\nGraph visualization saved to output/graph.md", style="bold green")
-        )
-        console.print(
-            Text(
-                "Open in VSCode and press Ctrl+Shift+V (Cmd+Shift+V on Mac) to preview\n",
-                style="bold blue",
-            )
-        )
-    except Exception as e:
-        console.print(
-            Text(f"Could not generate graph visualization: {e}", style="bold red")
-        )
+    for event in graph.stream(
+        {"messages": [{"role": "user", "content": user_input}]},
+        config=config,
+        stream_mode="values",
+    ):
+        # event["messages"][-1].pretty_print()
+        assistant_message = event["messages"][-1].content
+        # Display assistant's message with markdown and style
+        console.print(Text("Assistant:", style="bold green"))
+        markdown_response = Markdown(assistant_message)
+        console.print(markdown_response)
+        # Line break and divider
+        console.print(Text("\n", style="bold white"))
 
 
-# Call this before starting the chat loop
-visualize_graph()
+# Instead of calling visualize_graph(), now call save_graph_visualization(graph)
+save_graph_visualization(graph)
 
 while True:
+    # Tell LangGraph to use a specific thread ID for chat history
+    config = {"configurable": {"thread_id": "1"}}
     try:
         # Prompt for user input and style it nicely
-        user_input = input(Text("You: ", style="bold magenta"))
+        user_input = input("You: ")
         if user_input.lower() in ["quit", "exit", "q"]:
             console.print(Text("Goodbye!", style="bold red"))
             break
 
-        stream_graph_updates_with_styles(user_input)
+        stream_graph_updates_with_styles(user_input, config)
     except Exception as e:
         console.print(Text(f"Error: {e}", style="bold red"))
         console.print(
             Text("An error occurred. Using fallback input...", style="bold yellow")
         )
-        user_input = "What do you know about LangGraph?"
-        stream_graph_updates_with_styles(user_input)
+        fallback_input = "What do you know about LangGraph?"
+        stream_graph_updates_with_styles(fallback_input, config)
         break
