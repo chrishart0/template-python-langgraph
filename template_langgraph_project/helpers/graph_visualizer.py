@@ -5,13 +5,16 @@ from rich.text import Text
 console = Console()
 
 
-def save_graph_visualization(graph, output_dir: str = "output"):
+def save_graph_visualization(
+    graph, output_dir: str = "output", source_file: str = None
+):
     """
     Saves a Mermaid visualization of a LangGraph to a markdown file.
 
     Args:
         graph: The compiled LangGraph object.
         output_dir (str): Directory to save the visualization (default: "output").
+        source_file (str): Source file path to use for naming the output (default: None).
     """
     try:
         # Get the Mermaid diagram source
@@ -27,7 +30,14 @@ def save_graph_visualization(graph, output_dir: str = "output"):
         # Save to a markdown file in the output directory
         output_path = Path(output_dir)
         output_path.mkdir(exist_ok=True)
-        file_path = output_path / "graph.md"
+
+        # Generate file name based on source file if provided
+        if source_file:
+            base_name = Path(source_file).stem
+            file_path = output_path / f"graph_{base_name}.md"
+        else:
+            file_path = output_path / "graph.md"
+
         with open(file_path, "w") as f:
             f.write(markdown_content)
 
