@@ -4,6 +4,7 @@ from template_langgraph_project.helpers.graph_visualizer import save_graph_visua
 
 from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph import END, MessageGraph
+from langchain_community.callbacks import get_openai_callback
 
 
 from template_langgraph_project.examples.X_basic_Reflection_Agent.chains import (
@@ -19,7 +20,12 @@ GENERATE = "generate"
 
 def generation_node(state: Sequence[BaseMessage]):
     logger.info("Generating post")
-    return generation_chain.invoke({"messages": state})
+    with get_openai_callback() as cb:
+        response = generation_chain.invoke({"messages": state})
+        logger.info(
+            f"Generation tokens: {cb.total_tokens} (Prompt: {cb.prompt_tokens}, Completion: {cb.completion_tokens})"
+        )
+    return response
 
 
 def reflection_node(messages: Sequence[BaseMessage]) -> List[BaseMessage]:
@@ -29,7 +35,11 @@ def reflection_node(messages: Sequence[BaseMessage]) -> List[BaseMessage]:
     This will get fed back to the generation node as a new message.
     """
     logger.info("Reflecting on post")
-    response = reflection_chain.invoke({"messages": messages})
+    with get_openai_callback() as cb:
+        response = reflection_chain.invoke({"messages": messages})
+        logger.info(
+            f"Reflection tokens: {cb.total_tokens} (Prompt: {cb.prompt_tokens}, Completion: {cb.completion_tokens})"
+        )
     return [HumanMessage(content=response.content)]
 
 
@@ -60,7 +70,23 @@ if __name__ == "__main__":
     inputs = [
         HumanMessage(content="Write a post about the benefits of using LangGraph")
     ]
-    response = graph.invoke(inputs)
+
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_cost = 0
+
+    with get_openai_callback() as cb:
+        response = graph.invoke(inputs)
+        total_prompt_tokens = cb.prompt_tokens
+        total_completion_tokens = cb.completion_tokens
+        total_cost = cb.total_cost
+
+        logger.info("\nToken Usage Summary:")
+        logger.info(f"Prompt tokens: {total_prompt_tokens}")
+        logger.info(f"Completion tokens: {total_completion_tokens}")
+        logger.info(f"Total tokens: {total_prompt_tokens + total_completion_tokens}")
+        logger.info(f"Total cost: ${total_cost:.4f}")
+
     for message in response:
         print(message.content)
         print("\n")
