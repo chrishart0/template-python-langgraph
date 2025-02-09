@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  phoenix:
+    # https://hub.docker.com/r/arizephoenix/phoenix/tags
+    image: arizephoenix/phoenix:version-7.12.0
+    ports:
+      - "6006:6006"
+    volumes:
+      - phoenix_data:/phoenix
+    environment:
+      - PHOENIX_ENV=prod
+
+volumes:
+  phoenix_data: 

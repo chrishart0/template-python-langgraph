@@ -8,18 +8,21 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-langgraph = "^0.2.69"                                # https://pypi.org/project/langgraph/
-langchain-openai = "^0.3.3"                          # https://pypi.org/project/langchain-openai/
+langgraph = "^0.2.70"                                # https://pypi.org/project/langgraph/
+langchain-community = "^0.3.17"                      # https://pypi.org/project/langchain-community/
+langchain-openai = "^0.3.4"                          # https://pypi.org/project/langchain-openai/
 arize-phoenix-otel = "0.7.1"                         # https://pypi.org/project/arize-phoenix-otel/
 pydantic = "^2.10.6 "                                # https://pypi.org/project/pydantic/
 pydantic-settings = "^2.7.1"                         # https://pypi.org/project/pydantic-settings/
 loguru = "^0.7.3"                                    # https://pypi.org/project/loguru/
-rich = "^13.9.4"
-langchain-community = "^0.3.17"
+rich = "^13.9.4"                                     # https://pypi.org/project/rich/
+
+arize-phoenix = "^7.12.0"
+openinference-instrumentation-langchain = "^0.1.31"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.1.0"         # https://pypi.org/project/pre-commit/
-black = "^25.1.0"            # https://pypi.org/project/black/
+black = "^25.1.0"             # https://pypi.org/project/black/
 flake8 = "^7.1.1"             # https://pypi.org/project/flake8/
 pytest = "^8.3.4"             # https://pypi.org/project/pytest/
 pytest-cov = "^6.0.0"         # https://pypi.org/project/pytest-cov/

@@ -8,7 +8,7 @@ Follow these steps to set up the project:
 1. **Set up Python version with pyenv:**
    *Install pyenv if you don't have it: <https://github.com/pyenv/pyenv>*
 
-   ```sh
+   ```bash
    # Install specific Python version
    pyenv install 3.12
    python --version 
@@ -16,17 +16,17 @@ Follow these steps to set up the project:
    ```
 
 2. **Create a virtual environment:**
-   ```sh
+   ```bash
    python -m venv .venv
    ```
 
 3. **Activate the virtual environment:**
    - On macOS and Linux:
-     ```sh
+     ```bash
      source .venv/bin/activate
      ```
    - On Windows:
-     ```sh
+     ```
      .venv\Scripts\activate
      ```
 
@@ -42,19 +42,27 @@ Follow these steps to set up the project:
 5. **Setup your .env**
 Copy the `.env.example` file to `.env` and update the values:
 
-```
+```bash
 cp .env.example .env
 ```
 
 6. **Optional: Setup pre-commit hook**
-```
+```bash
 pre-commit install
 ```
+
+7. **Spin up Phoenix tracing server**
+```bash
+docker compose up -d
+```
+
+View your traces at: <http://localhost:6006>
 
 ## Run the langchain or llama index example scripts
 ```
 python3 template_langgraph_project/examples/simple-langgraph-example.py
 ```
+
 
 ## Testing
 

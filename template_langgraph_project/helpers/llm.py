@@ -7,8 +7,20 @@ from template_langgraph_project.settings import settings
 from template_langgraph_project.helpers.logger_helper import get_logger
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from typing import Literal
+from openinference.instrumentation.langchain import LangChainInstrumentor
+from phoenix.otel import register
+
 
 logger = get_logger()
+
+logger.info("Registering Phoenix tracer provider")
+tracer_provider = register(
+    project_name="template_langgraph_project",
+    endpoint="http://localhost:6006/v1/traces",
+)
+
+logger.info("Instrumenting LangChain in Phoenix tracer provider")
+LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
 
 
 def get_llm(mode: Literal["fast", "default", "reasoning"] = "default"):
