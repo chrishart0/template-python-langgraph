@@ -6,11 +6,12 @@ from langchain_core.output_parsers import (
     PydanticToolsParser,
 )
 from langchain_core.messages import HumanMessage
-from template_langgraph_project.helpers.logger_helper import get_logger
 from datetime import datetime
 from template_langgraph_project.examples.Reflexion_Research_Agent.schemas import (
     AnswerQuestion,
+    ReviseAnswer,
 )
+from template_langgraph_project.helpers.logger_helper import get_logger
 
 logger = get_logger()
 
@@ -39,16 +40,28 @@ first_responder_prompt_template = actor_prompt_template.partial(
     first_instruction="Provide a detailed ~250 word answer."
 )
 
-first_responder_chain = (
-    first_responder_prompt_template
-    | llm
-    | llm.bind_tools(tools=[AnswerQuestion], tool_choice="AnswerQuestion")
+first_responder = first_responder_prompt_template | llm.bind_tools(
+    tools=[AnswerQuestion], tool_choice="AnswerQuestion"
 )
+
+revise_instructions = """Revise your previous answer using the new information.
+    - You should use the previous critique to add important information to your answer.
+    - You MUST include numerical citations in your revised answer to ensure it can be verified.
+    - Add a "References" section to the bottom of your answer (which does not count towards the word limit). In the form of:
+        - [1] https://example.com
+        - [2] https://example.com
+    - You should use the previous critique to remove superfluous information from your answer and make SURE it is not more than 250 words.
+"""
+
+revisor = actor_prompt_template.partial(
+    first_instruction=revise_instructions
+) | llm.bind_tools(tools=[ReviseAnswer], tool_choice="ReviseAnswer")
+
 
 if __name__ == "__main__":
     logger.info("Starting the first responder chain...")
     human_message = HumanMessage(
-        content="Write about AI-Powered SOC / autonomous soc problem domain,"
+        content="Write about AI startups in Chattanooga, TN,"
         " list startups that do that and raised capital."
     )
     chain = (
@@ -57,5 +70,22 @@ if __name__ == "__main__":
         | parser_pydantic
     )
 
-    result = chain.invoke({"messages": [human_message]})
-    logger.info(result)
+    response = chain.invoke({"messages": [human_message]})
+
+    result = response[0]
+    # logger.info(result)
+    # logger.info(result[0])
+
+    # parse the result
+    answer = result.answer
+    reflection = result.reflection
+    search_queries = result.search_queries
+
+    print(result.model_dump())
+    print("\n------------\n")
+
+    logger.info(f"Answer: {answer}")
+    logger.info(f"Reflection: {reflection}")
+    logger.info(f"Search Queries: {search_queries}")
+
+    print("\n------------\n")

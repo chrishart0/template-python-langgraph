@@ -4,6 +4,7 @@
         "checkpointer",
         "Jina",
         "langgraph",
+        "tavily",
         "virality"
     ],
     "python.pythonPath": "${workspaceFolder}/.venv/bin/python",

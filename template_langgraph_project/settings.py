@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     OUTPUT_DIRECTORY: str = "./outputs/"  # New setting for output directory
     MODEL: str = "gpt-4o-mini"
 
+    # Search API Keys
+    TAVILY_API_KEY: Optional[str] = None
+
     model_config = {"env_file": ".env"}
 
     def __init__(self, **data: Any):

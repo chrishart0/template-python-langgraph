@@ -2,11 +2,18 @@ from pathlib import Path
 from rich.console import Console
 from rich.text import Text
 
+from template_langgraph_project.helpers.logger_helper import get_logger
+
+logger = get_logger()
+
 console = Console()
 
 
 def save_graph_visualization(
-    graph, output_dir: str = "output", source_file: str = None
+    graph,
+    output_dir: str = "outputs",
+    source_file: str = None,
+    draw_ascii_mode: bool = True,
 ):
     """
     Saves a Mermaid visualization of a LangGraph to a markdown file.
@@ -15,10 +22,20 @@ def save_graph_visualization(
         graph: The compiled LangGraph object.
         output_dir (str): Directory to save the visualization (default: "output").
         source_file (str): Source file path to use for naming the output (default: None).
+        draw_ascii_mode (bool): Whether to draw the graph in ASCII mode (default: True).
+
+    Example:
+        ...
+        graph = graph_builder.compile(checkpointer=memory)
+        save_graph_visualization(graph, source_file="Basic_LangGraph_Project/main.py")
     """
     try:
         # Get the Mermaid diagram source
-        mermaid_source = graph.get_graph().draw_mermaid()
+        graph_source = graph.get_graph()
+        mermaid_source = graph_source.draw_mermaid()
+
+        if draw_ascii_mode:
+            logger.info("\n" + graph_source.draw_ascii())
 
         # Create markdown content with the mermaid diagram
         markdown_content = f"""# LangGraph Visualization
