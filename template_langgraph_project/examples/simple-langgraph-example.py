@@ -16,6 +16,7 @@ from rich.markdown import Markdown
 from rich.text import Text
 from template_langgraph_project.helpers.graph_visualizer import save_graph_visualization
 from template_langgraph_project.helpers.logger_helper import get_logger
+from template_langgraph_project.helpers.lang_fuse import get_langfuse_handler
 
 logger = get_logger()
 
@@ -85,7 +86,7 @@ save_graph_visualization(graph)
 
 while True:
     # Tell LangGraph to use a specific thread ID for chat history
-    config = {"configurable": {"thread_id": "1"}}
+    config = {"configurable": {"thread_id": "1"}, "callbacks": [get_langfuse_handler()]}
     try:
         # Prompt for user input and style it nicely
         user_input = input("You: ")

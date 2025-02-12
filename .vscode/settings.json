@@ -3,6 +3,7 @@
         "BAAI",
         "checkpointer",
         "Jina",
+        "langfuse",
         "langgraph",
         "tavily",
         "virality"
