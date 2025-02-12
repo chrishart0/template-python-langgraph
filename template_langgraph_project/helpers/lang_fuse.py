@@ -5,6 +5,9 @@ import requests
 
 logger = get_logger()
 
+# Cache for LangFuse handler
+cached_handler = None
+
 
 def langfuse_is_configured():
     """
@@ -61,6 +64,7 @@ def get_langfuse_handler():
     """
     Creates and returns a Langfuse CallbackHandler instance if the necessary
     settings are present; otherwise, returns None.
+    Uses a cached handler if available to avoid re-instantiation.
 
     :return: CallbackHandler instance or None
 
@@ -69,17 +73,22 @@ def get_langfuse_handler():
     chain.invoke({"input": "<user_input>"}, config={"callbacks": [langfuse_handler]})
     graph.invoke({"input": "<user_input>"}, config={"callbacks": [langfuse_handler]})
     """
+    global cached_handler
     logger.info("Getting Langfuse handler")
-    logger.info(
-        f"langfuse_is_configured_and_available: {langfuse_is_configured_and_available()}"
-    )
+
+    if cached_handler is not None:
+        logger.info("Returning cached Langfuse handler")
+        return cached_handler
+
     if langfuse_is_configured_and_available():
         logger.info("Langfuse is configured and available, creating handler")
-        return CallbackHandler(
+        cached_handler = CallbackHandler(
             public_key=settings.LANGFUSE_PUBLIC_KEY,
             secret_key=settings.LANGFUSE_SECRET_KEY,
             host=settings.LANGFUSE_HOST,
         )
+        return cached_handler
+
     return None
 
 
