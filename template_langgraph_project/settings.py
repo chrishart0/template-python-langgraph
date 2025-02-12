@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     OUTPUT_DIRECTORY: str = "./outputs/"  # New setting for output directory
     MODEL: str = "gpt-4o-mini"
 
+    # LangFuse
+    LANGFUSE_SECRET_KEY: Optional[str] = None
+    LANGFUSE_PUBLIC_KEY: Optional[str] = None
+    LANGFUSE_HOST: Optional[str] = None
+
     # Search API Keys
     TAVILY_API_KEY: Optional[str] = None
 
@@ -57,6 +62,16 @@ class Settings(BaseSettings):
                 f"Creating output directory since it doesn't exist: {self.OUTPUT_DIRECTORY}"
             )
             os.makedirs(self.OUTPUT_DIRECTORY)
+
+        # LangFuse secret is set but not public key or vise-a-versa throw an error
+        if self.LANGFUSE_SECRET_KEY and not self.LANGFUSE_PUBLIC_KEY:
+            raise ValueError(
+                "LANGFUSE_SECRET_KEY is set but LANGFUSE_PUBLIC_KEY is not set"
+            )
+        if self.LANGFUSE_PUBLIC_KEY and not self.LANGFUSE_SECRET_KEY:
+            raise ValueError(
+                "LANGFUSE_PUBLIC_KEY is set but LANGFUSE_SECRET_KEY is not set"
+            )
 
 
 settings = Settings()

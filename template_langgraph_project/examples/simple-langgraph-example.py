@@ -15,6 +15,9 @@ from rich.console import Console
 from rich.markdown import Markdown
 from rich.text import Text
 from template_langgraph_project.helpers.graph_visualizer import save_graph_visualization
+from template_langgraph_project.helpers.logger_helper import get_logger
+
+logger = get_logger()
 
 
 class State(TypedDict):
@@ -49,6 +52,7 @@ graph_builder.add_node("chatbot", chatbot)
 graph_builder.set_entry_point("chatbot")
 graph_builder.set_finish_point("chatbot")
 
+logger.info("Compiling graph")
 graph = graph_builder.compile(checkpointer=memory)
 
 console = Console()
