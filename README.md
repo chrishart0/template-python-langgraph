@@ -54,37 +54,25 @@ pre-commit install
 ### Setup Tracing
 There are several tracing options built in, you can choose which one to use or compare them side-by-side. Phoenix will just work one you spin the container up, LangFuse will require more setup and configuration throughout the project where you want it tracing.
 
-#### Phoenix
-**Spin up Phoenix tracing server**
+#### Spin up Phoenix and LangFuse tracing servers
+
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.langfuse.yml up -d
 ```
 
 View your traces at: <http://localhost:6006>
 
-#### Langfuse
-**1. Spin up Langfuse tracing server**
-```bash
-docker compose -f docker-compose.langfuse.yml up -d
-```
+##### Langfuse setup
 
-**2. Create a new organization and project in Langfuse**
+**1. Create a new organization and project in Langfuse**
 Head to <http://localhost:3000> and create a new user, organization, and project.
 
-**3. Add the secrets LangFuse shows you to your .env file Langfuse**
+**2. Add the secrets LangFuse shows you to your .env file Langfuse**
 ```bash
 LANGFUSE_SECRET_KEY=sk-lf-...
 LANGFUSE_PUBLIC_KEY=pk-lf-...
 LANGFUSE_HOST=http://localhost:3000
 ```
-
-**4. Restart the docker-compose file**
-```bash
-docker compose -f docker-compose.langfuse.yml down
-docker compose -f docker-compose.langfuse.yml up -d
-```
-
-**5. View your traces at: <http://localhost:3000>**
 
 ## Run the langchain or llama index example scripts
 
