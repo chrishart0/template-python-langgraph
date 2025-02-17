@@ -8,9 +8,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-langgraph = "^0.2.70"                                # https://pypi.org/project/langgraph/
+langgraph = "^0.2.73"                                # https://pypi.org/project/langgraph/
 langchain-community = "^0.3.17"                      # https://pypi.org/project/langchain-community/
-langchain-openai = "^0.3.4"                          # https://pypi.org/project/langchain-openai/
+langchain-openai = "^0.3.6"                          # https://pypi.org/project/langchain-openai/
 arize-phoenix-otel = "0.7.1"                         # https://pypi.org/project/arize-phoenix-otel/
 pydantic = "^2.10.6 "                                # https://pypi.org/project/pydantic/
 pydantic-settings = "^2.7.1"                         # https://pypi.org/project/pydantic-settings/

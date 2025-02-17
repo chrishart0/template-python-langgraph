@@ -56,6 +56,7 @@ There are several tracing options built in, you can choose which one to use or c
 
 #### Spin up Phoenix and LangFuse tracing servers
 
+If you don't have docker installed, here is the setup guide for Ubuntu: <https://docs.docker.com/engine/install/ubuntu/>
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.langfuse.yml up -d
 ```
